@@ -30,11 +30,12 @@
 
 # Azure 일반
 
-### Azure 상태 어드바이저
+### 상태 어드바이저 : Azure Service Health
 
-- Azure Service Health
+Azure는 클라우드 리소스의 상태에 대해 지속적으로 알려주는 Azure Service Health를 제공하며, Azure 서비스의 문제가 사용자에게 영향을 주는 경우 맞춤형 지침 및 지원을 제공한다. Azure Service Health는 Azure Health, Service Health, Resource Health 서비스라는 3가지 서비스로 구성되어 있다.
 
-
+1. Azure status
+   - Azure Status 페이지에서 Azure의 서비스 중단을 사용자에게 알려준다.
 
 ---
 
