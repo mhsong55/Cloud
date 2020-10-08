@@ -14,7 +14,7 @@
 
 +---  [4. Nic (Network interface card)](#4.-nic-(network-interface-card))
 
-+--- [5. Network Security Group](#5. nsg-(network-security-group))
++--- [5. Network Security Group](#5.-nsg-(network-security-group))
 
 +--- [6. Load Balancer](#6.-load-balancer)
 
