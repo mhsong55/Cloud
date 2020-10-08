@@ -1,8 +1,8 @@
 # git ignore file
 
-./**/*.ppt
-./**/*.pptx
-./**/*.zip
+*.ppt
+*.pptx
+*.zip
 
 *.jpg
 *.jpeg
