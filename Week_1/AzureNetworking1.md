@@ -105,7 +105,23 @@ Azure는 두 가지 형태의 피어링을 지원한다.
 
 ## 6. Load Balancer
 
-External, Internal Load Balancer
+> [Azure Load Balancer란?](https://docs.microsoft.com/ko-kr/azure/load-balancer/load-balancer-overview)
+
+- Load balance : 백 엔드 리소스나 서버의 그룹에서 load(들어오는 Network traffic)을 효율적으로 분산시키는 것
+- Azure Load Balancer는 OSI model의 layer 4에서 동작
+- Load balancer의 Front-end에서의 inbound traffic을 미리 구성된 load balance policy나 health probe에 따라 Back-end pool instance로 분산
+- Load Balancer는 External (or Public), Internal (or private) Load Balancer로 구분
+
+  1. External Load Balancer
+     - VNet 내의 VM에 대해 Out-Bound connection을 제공
+     - Private IP Address를 Public IP Address로 변환해서 진행
+     - 결과적으로 Internet traffic load를 VM에 분산하는 역할
+
+  2. Internal Load Balancer
+     - VNet 내부에서 사용되는 Load Balancer
+     - VNet 내부의 traffic을 분산시킬 떄 사용
+
+![azure_load_balancer_img](./img/azure-load-balancer.svg)
 
 ## Health Probe
 
