@@ -127,9 +127,15 @@ Azure는 두 가지 형태의 피어링을 지원한다.
 
 ## VPN (Virtual Private Network)
 
+일반적으로 private network와 private network를 연결하는데는 2가지 방법이 있는데 하나는 network를 전용선으로 연결하는 방법이다. 그러나 이 방법은 전용선 구축을 위한 물리적인 방법이 필요하다. 따라서 Public network(internet)을 전용선처럼 활용하고 암호화 기술을 적용해 보안성을 높인 private network 간 연결을 구축하는 방식을 VPN (Virtual Private Network)이라고 한다.
+
 ### (1) P2S (Point-to-Site) VPN
 
+개별 client와 network 간 연결
+
 ### (2) S2S (Site-to-Site) VPN
+
+network와 network 간 연결
 
 Azure VNet -------------------- IDC
 
