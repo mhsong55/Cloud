@@ -80,7 +80,7 @@ $nic = New-AzNetworkInterface `
     -NetworkSecurityGroupId $nsg.Id
 
 $adminUsername = 'mhsong'
-$adminPassword = 'thdTpgns5%'
+$adminPassword = 'thdAudgns9)'
 
 # PSCredentail object 생성
 $adminCreds = New-Object PSCredential $adminUsername, ($adminPassword | ConvertTo-SecureString -AsPlainText -Force)
@@ -114,12 +114,14 @@ Set-AzVMSourceImage `
     -Skus $skuName `
     -Version 'latest'
 
+# VM OS Disk 설정
 Set-AzVMOSDisk `
     -VM $vmConfig `
     -Name "$($vmName)_OsDisk_1_$(Get-Random)" `
     -StorageAccountType 'Standard_LRS' `
     -CreateOption fromImage
 
+# VM Boot Diagnostic 설정
 Set-AzVMBootDiagnostic `
     -VM $vmConfig `
     -Disable

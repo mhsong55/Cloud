@@ -16,7 +16,7 @@ title: "Education contents of Week3"
 
 > ### **Availability**
 >
->   사용자가 data와 service를 정상적으로 사용가능한 정도를 의미한다. 일반적으로 time percentage per  year로 표현한다.
+>   사용자가 data와 service를 정상적으로 사용가능한 정도를 의미한다. 일반적으로 time percentage per year로 표현한다.
 > 
 > $$Availability (\%) = \cfrac{Uptime}{Uptime+Downtime}$$
 > 
@@ -67,63 +67,121 @@ Windows server 실행하는 VM을 가용성 집합에 배포
 ## Powershell로 배포하기
 
 1. Sign in
+    
     ```powershell
     Connect-AzAccount
     ```
+
 2. Resource Group 생성
+    
     ```powershell
     $resourceGroup = New-AzResourceGroup `
       -Name 'az1000301-RG' `
       -Location 'koreacentral'
     ```
+
 3. location 저장
+    
     ```powershell
     $location = $resourceGroup.Location
     ```
+
 4. Availability Set 생성
+    
     ```powershell
     $availabilitySet = New-AzAvailabilitySet `
       -ResourceGroupName $resourceGroup.ResourceGroupName `
       -Name 'az1000301-avset0' `
-      -Location $location
+      -Location $location `
+      -PlatformFaultDomainCount 2 `
+      -PlatformUpdateDomainCount 2 `
+      -Sku aligned # 
     ```
+
 5. Virtual Network 생성
+    
     ```powershell
     $vnet = New-AzVirtualNetwork `
       -Name 'az1000301-RG-vnet' `
       -ResourceGroupName $resourceGroup.ResourceGroupName `
       -Location $location `
       -AddressPrefix '10.103.0.0/16'
+    ```
+
+6. Subnet config 생성
+    
+    ```powershell
     $subnetConfig = Add-AzVirtualNetworkSubnetConfig `
-      -Name 'subnet0' `
-      -AddressPrefix '10.103.0.0/24' `
-      -VirtualNetwork $vnet
+     -Name 'subnet0' `
+     -AddressPrefix '10.103.0.0/24' `
+     -VirtualNetwork $vnet
+    ```
+
+7. Subnet config VNET에 적용
+    
+    ```powershell
     $vnet | Set-AzVirtualNetwork
     ```
-    삭제 command
-    ```powershell
-    Remove-AzResourceGroup -Name $resourceGroup.ResourceGroupName, 'NetworkWatcherRG'
-    ```
-4. Create admin credentials for the VM
-    ```powershell
-    $cred = Get-Credential -Message "Enter a username and password for the virtual machine"
-    ```
-5. Create a virtual machine
+
+8. vmName 저장
+    
     ```powershell
     $vmName = 'az1000301-vm0'
+    ```
+
+9. vmSize 저장
+    
+    ```powershell
     $vmSize = 'Standard_DS2_v2'
+    ```
+
+10. Subnet ID 저장
+    
+    ```powershell
     $subnetid = (Get-AzVirtualNetwork `
       -Name $vnet.Name `
       -ResourceGroupName $resourceGroup.ResourceGroupName).Subnets.Id
+    ```
+
+11. RDP Port Open rule 생성
+    
+    ```powershell
+    $rdpRule = New-AzNetworkSecurityRuleConfig `
+      -Name "$vmName-nsg-Rule" `
+      -Description "Allow RDP" `
+      -Access "Allow" `
+      -Protocol "TCP" `
+      -Direction "Inbound" `
+      -Priority "300" `
+      -SourceAddressPrefix "Internet" `
+      -SourcePortRange * `
+      -DestinationAddressPrefix * `
+      -DestinationPortRange 3389
+    ```
+
+12. NSG 생성 및 RDP port open rule 적용
+    
+    ```powershell
     $nsg = New-AzNetworkSecurityGroup `
       -ResourceGroupName $resourceGroup.ResourceGroupName `
       -Location $location `
-      -Name "$vmName-nsg"
+      -Name "$vmName-nsg" `
+      -SecurityRules $rdpRule
+    ```
+
+13. Public IP 생성
+    
+    ```powershell
     $pip = New-AzPublicIpAddress `
       -Name "$vmName-ip" `
       -ResourceGroupName $resourceGroup.ResourceGroupName `
       -Location $location `
       -AllocationMethod Dynamic 
+    ```
+
+14. NIC 생성
+    
+    ```powershell
     $nic = New-AzNetworkInterface `
       -Name "$($vmName)$(Get-Random)" `
       -ResourceGroupName $resourceGroup.ResourceGroupName `
@@ -131,36 +189,90 @@ Windows server 실행하는 VM을 가용성 집합에 배포
       -SubnetId $subnetid `
       -PublicIpAddressId $pip.Id `
       -NetworkSecurityGroupId $nsg.Id
-    $adminUsername = 'Student'
-    $adminPassword = 'Pa55w.rd1234'
+    ```
+
+15. RDP admin username & password 저장
+    
+    ```powershell
+    $adminUsername = 'adminUser'
+    $adminPassword = 'password112233'
+    ```
+
+16. PSCredential object 생성
+    
+    ```powershell
     $adminCreds = New-Object PSCredential $adminUsername, ($adminPassword | ConvertTo-SecureString -AsPlainText -Force)
+    ```
+
+17. publisherName 저장
+    
+    ```powershell
     $publisherName = 'MicrosoftWindowsServer'
+    ```
+
+18. offerName 저장
+    
+    ```powershell
     $offerName = 'WindowsServer'
+    ```
+
+19. skuName 저장
+    
+    ```powershell
     $skuName = '2019-Datacenter'
-    $osDiskType = (Get-AzDisk -ResourceGroupName $resourceGroup.ResourceGroupName)[0].Sku.Name
+    ```
+
+20. VMConfig object 생성
+    
+    ```powershell
     $vmConfig = New-AzVMConfig `
       -VMName $vmName `
       -VMSize $vmSize `
       -AvailabilitySetId $availabilitySet.Id
+    ```
+
+21. VM - Network Interface Connect
+    
+    ```powershell
     Add-AzVMNetworkInterface `
       -VM $vmConfig `
       -Id $nic.Id
+    ```
+
+22. VM Operating System 설정
+    
+    ```powershell
     Set-AzVMOperatingSystem `
       -VM $vmConfig `
       -Windows `
       -ComputerName $vmName `
-      -Credential $adminCreds 
+      -Credential $adminCreds
+    ```
+
+23. VM Source Image 설정
+    
+    ```powershell
     Set-AzVMSourceImage `
       -VM $vmConfig `
       -PublisherName $publisherName `
       -Offer $offerName `
       -Skus $skuName `
       -Version 'latest'
+    ```
+
+24. VM OS Disk 설정
+    
+    ```powershell
     Set-AzVMOSDisk `
       -VM $vmConfig `
       -Name "$($vmName)_OsDisk_1_$(Get-Random)" `
-      -StorageAccountType $osDiskType `
+      -StorageAccountType 'Standard_LRS' `
       -CreateOption fromImage
+    ```
+
+25. VM Boot Diagnostic 설정
+
+    ```powershell
     Set-AzVMBootDiagnostic `
       -VM $vmConfig `
       -Disable
