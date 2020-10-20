@@ -57,3 +57,115 @@ Accelerated Networking
 VM에 대한 단일 루트 I/O 가상화 (SR-IOV)를 구현, 네트워킹 성능이 크게 향상
 
 사용자 지정 스크립트 확장 (custom script extension)
+
+---
+
+# VM 배포하기
+
+Windows server 실행하는 VM을 가용성 집합에 배포
+
+## Powershell로 배포하기
+
+1. Sign in
+    ```powershell
+    Connect-AzAccount
+    ```
+2. Resource Group 생성
+    ```powershell
+    $resourceGroup = New-AzResourceGroup `
+      -Name 'az1000301-RG' `
+      -Location 'koreacentral'
+    ```
+3. location 저장
+    ```powershell
+    $location = $resourceGroup.Location
+    ```
+4. Availability Set 생성
+    ```powershell
+    $availabilitySet = New-AzAvailabilitySet `
+      -ResourceGroupName $resourceGroup.ResourceGroupName `
+      -Name 'az1000301-avset0' `
+      -Location $location
+    ```
+5. Virtual Network 생성
+    ```powershell
+    $vnet = New-AzVirtualNetwork `
+      -Name 'az1000301-RG-vnet' `
+      -ResourceGroupName $resourceGroup.ResourceGroupName `
+      -Location $location `
+      -AddressPrefix '10.103.0.0/16'
+    $subnetConfig = Add-AzVirtualNetworkSubnetConfig `
+      -Name 'subnet0' `
+      -AddressPrefix '10.103.0.0/24' `
+      -VirtualNetwork $vnet
+    $vnet | Set-AzVirtualNetwork
+    ```
+    삭제 command
+    ```powershell
+    Remove-AzResourceGroup -Name $resourceGroup.ResourceGroupName, 'NetworkWatcherRG'
+    ```
+4. Create admin credentials for the VM
+    ```powershell
+    $cred = Get-Credential -Message "Enter a username and password for the virtual machine"
+    ```
+5. Create a virtual machine
+    ```powershell
+    $vmName = 'az1000301-vm0'
+    $vmSize = 'Standard_DS2_v2'
+    $subnetid = (Get-AzVirtualNetwork `
+      -Name $vnet.Name `
+      -ResourceGroupName $resourceGroup.ResourceGroupName).Subnets.Id
+    $nsg = New-AzNetworkSecurityGroup `
+      -ResourceGroupName $resourceGroup.ResourceGroupName `
+      -Location $location `
+      -Name "$vmName-nsg"
+    $pip = New-AzPublicIpAddress `
+      -Name "$vmName-ip" `
+      -ResourceGroupName $resourceGroup.ResourceGroupName `
+      -Location $location `
+      -AllocationMethod Dynamic 
+    $nic = New-AzNetworkInterface `
+      -Name "$($vmName)$(Get-Random)" `
+      -ResourceGroupName $resourceGroup.ResourceGroupName `
+      -Location $location `
+      -SubnetId $subnetid `
+      -PublicIpAddressId $pip.Id `
+      -NetworkSecurityGroupId $nsg.Id
+    $adminUsername = 'Student'
+    $adminPassword = 'Pa55w.rd1234'
+    $adminCreds = New-Object PSCredential $adminUsername, ($adminPassword | ConvertTo-SecureString -AsPlainText -Force)
+    $publisherName = 'MicrosoftWindowsServer'
+    $offerName = 'WindowsServer'
+    $skuName = '2019-Datacenter'
+    $osDiskType = (Get-AzDisk -ResourceGroupName $resourceGroup.ResourceGroupName)[0].Sku.Name
+    $vmConfig = New-AzVMConfig `
+      -VMName $vmName `
+      -VMSize $vmSize `
+      -AvailabilitySetId $availabilitySet.Id
+    Add-AzVMNetworkInterface `
+      -VM $vmConfig `
+      -Id $nic.Id
+    Set-AzVMOperatingSystem `
+      -VM $vmConfig `
+      -Windows `
+      -ComputerName $vmName `
+      -Credential $adminCreds 
+    Set-AzVMSourceImage `
+      -VM $vmConfig `
+      -PublisherName $publisherName `
+      -Offer $offerName `
+      -Skus $skuName `
+      -Version 'latest'
+    Set-AzVMOSDisk `
+      -VM $vmConfig `
+      -Name "$($vmName)_OsDisk_1_$(Get-Random)" `
+      -StorageAccountType $osDiskType `
+      -CreateOption fromImage
+    Set-AzVMBootDiagnostic `
+      -VM $vmConfig `
+      -Disable
+    ```
+
+## Template으로 배포하기
+
+## Azure CLI로 배포하기
