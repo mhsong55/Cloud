@@ -34,14 +34,15 @@ $subnetConfig = Add-AzVirtualNetworkSubnetConfig `
 # Subnet config VNET에 적용
 $vnet | Set-AzVirtualNetwork
 
-# vmName 저장
-$vmName = 'az1000301-vm0'
-# vmSize 저장
-$vmSize = 'Standard_DS2_v2'
 # Subnet ID 저장
 $subnetid = (Get-AzVirtualNetwork `
     -Name $vnet.Name `
     -ResourceGroupName $resourceGroup.ResourceGroupName).Subnets.Id
+
+# vmName 저장
+$vmName = 'az1000301-vm0'
+# vmSize 저장
+$vmSize = 'Standard_DS2_v2'
 
 # RDP Port Open
 $rdpRule = New-AzNetworkSecurityRuleConfig `
@@ -65,7 +66,7 @@ $nsg = New-AzNetworkSecurityGroup `
 
 # Public IP 생성
 $pip = New-AzPublicIpAddress `
-    -Name "$vmName-ip" `
+    -Name "$vmName-pip1" `
     -ResourceGroupName $resourceGroup.ResourceGroupName `
     -Location $location `
     -AllocationMethod Dynamic 
@@ -78,6 +79,10 @@ $nic = New-AzNetworkInterface `
     -SubnetId $subnetid `
     -PublicIpAddressId $pip.Id `
     -NetworkSecurityGroupId $nsg.Id
+
+
+# Network settings
+# ------------------------------------------------------------
 
 $adminUsername = 'mhsong'
 $adminPassword = 'thdAudgns9)'
@@ -127,4 +132,11 @@ Set-AzVMBootDiagnostic `
     -Disable
 
 # Azure VM 배포
-New-AzVM -ResourceGroupName $resourceGroup.ResourceGroupName -Location $location -VM $vmConfig
+$vm = New-AzVM `
+  -ResourceGroupName $resourceGroup.ResourceGroupName `
+  -Location $location `
+  -VM $vmConfig
+
+
+# Remove-AzResourceGroup -Name $resourceGroup.ResourceGroupName
+# Remove-AzResourceGroup -Name 'NetworkWatcherRG'

@@ -8,6 +8,12 @@ title: "Education contents of Week3"
 |:---:|:---:|:---:|:---:| 
 |4주|Compute|Azure VM, VMSS<br>가용성 집합, 가용성 존<br>단일 vmNIC에 여러 개의 IP 할당<br>다수의 VM 배포 작업 (Portal, CLI, PowerShell, template)<br>Snapshot 생성, Custom Image 생성<br>VM Scale-Set|임승현|
 
+## Table of Contents
+
+[1. Availability Set과 Availability Zone](#1-availability-set과-availability-zone)
+
+[1.1 Availability Set](#11-availability-set)
+
 # 1. **Availability Set**과 **Availability Zone**
 
 ## 1.1. Availability Set
@@ -66,218 +72,381 @@ Windows server 실행하는 VM을 가용성 집합에 배포
 
 ## Powershell로 배포하기
 
-1. Sign in
-    
-    ```powershell
-    Connect-AzAccount
-    ```
+```powershell
+# AzAccount 연결
+Connect-AzAccount
 
-2. Resource Group 생성
-    
-    ```powershell
-    $resourceGroup = New-AzResourceGroup `
-      -Name 'az1000301-RG' `
-      -Location 'koreacentral'
-    ```
+# ResourceGroup 생성
+$resourceGroup = New-AzResourceGroup `
+    -Name 'az1000301-RG' `
+    -Location 'koreacentral'
 
-3. location 저장
-    
-    ```powershell
-    $location = $resourceGroup.Location
-    ```
+# location 저징
+$location = $resourceGroup.Location
 
-4. Availability Set 생성
-    
-    ```powershell
-    $availabilitySet = New-AzAvailabilitySet `
-      -ResourceGroupName $resourceGroup.ResourceGroupName `
-      -Name 'az1000301-avset0' `
-      -Location $location `
-      -PlatformFaultDomainCount 2 `
-      -PlatformUpdateDomainCount 2 `
-      -Sku aligned # 
-    ```
+# Availability Set 생성
+$availabilitySet = New-AzAvailabilitySet `
+    -ResourceGroupName $resourceGroup.ResourceGroupName `
+    -Name 'az1000301-avset0' `
+    -Location $location `
+    -PlatformFaultDomainCount 2 `
+    -PlatformUpdateDomainCount 2 `
+    -Sku aligned
 
-5. Virtual Network 생성
-    
-    ```powershell
-    $vnet = New-AzVirtualNetwork `
-      -Name 'az1000301-RG-vnet' `
-      -ResourceGroupName $resourceGroup.ResourceGroupName `
-      -Location $location `
-      -AddressPrefix '10.103.0.0/16'
-    ```
+# Virtual Network 생성
+$vnet = New-AzVirtualNetwork `
+    -Name 'az1000301-RG-vnet' `
+    -ResourceGroupName $resourceGroup.ResourceGroupName `
+    -Location $location `
+    -AddressPrefix '10.103.0.0/16'
 
-6. Subnet config 생성
-    
-    ```powershell
-    $subnetConfig = Add-AzVirtualNetworkSubnetConfig `
-     -Name 'subnet0' `
-     -AddressPrefix '10.103.0.0/24' `
-     -VirtualNetwork $vnet
-    ```
+# Subnet config 생성
+$subnetConfig = Add-AzVirtualNetworkSubnetConfig `
+    -Name 'subnet0' `
+    -AddressPrefix '10.103.0.0/24' `
+    -VirtualNetwork $vnet
 
-7. Subnet config VNET에 적용
-    
-    ```powershell
-    $vnet | Set-AzVirtualNetwork
-    ```
+# Subnet config VNET에 적용
+$vnet | Set-AzVirtualNetwork
 
-8. vmName 저장
-    
-    ```powershell
-    $vmName = 'az1000301-vm0'
-    ```
+# Subnet ID 저장
+$subnetid = (Get-AzVirtualNetwork `
+    -Name $vnet.Name `
+    -ResourceGroupName $resourceGroup.ResourceGroupName).Subnets.Id
 
-9. vmSize 저장
-    
-    ```powershell
-    $vmSize = 'Standard_DS2_v2'
-    ```
+# vmName 저장
+$vmName = 'az1000301-vm0'
+# vmSize 저장
+$vmSize = 'Standard_DS2_v2'
 
-10. Subnet ID 저장
-    
-    ```powershell
-    $subnetid = (Get-AzVirtualNetwork `
-      -Name $vnet.Name `
-      -ResourceGroupName $resourceGroup.ResourceGroupName).Subnets.Id
-    ```
+# RDP Port Open
+$rdpRule = New-AzNetworkSecurityRuleConfig `
+    -Name "$vmName-nsg-Rule" `
+    -Description "Allow RDP" `
+    -Access "Allow" `
+    -Protocol "TCP" `
+    -Direction "Inbound" `
+    -Priority "300" `
+    -SourceAddressPrefix "Internet" `
+    -SourcePortRange * `
+    -DestinationAddressPrefix * `
+    -DestinationPortRange 3389
 
-11. RDP Port Open rule 생성
-    
-    ```powershell
-    $rdpRule = New-AzNetworkSecurityRuleConfig `
-      -Name "$vmName-nsg-Rule" `
-      -Description "Allow RDP" `
-      -Access "Allow" `
-      -Protocol "TCP" `
-      -Direction "Inbound" `
-      -Priority "300" `
-      -SourceAddressPrefix "Internet" `
-      -SourcePortRange * `
-      -DestinationAddressPrefix * `
-      -DestinationPortRange 3389
-    ```
+# NSG 생성
+$nsg = New-AzNetworkSecurityGroup `
+    -ResourceGroupName $resourceGroup.ResourceGroupName `
+    -Location $location `
+    -Name "$vmName-nsg" `
+    -SecurityRules $rdpRule
 
-12. NSG 생성 및 RDP port open rule 적용
-    
-    ```powershell
-    $nsg = New-AzNetworkSecurityGroup `
-      -ResourceGroupName $resourceGroup.ResourceGroupName `
-      -Location $location `
-      -Name "$vmName-nsg" `
-      -SecurityRules $rdpRule
-    ```
+# Public IP 생성
+$pip = New-AzPublicIpAddress `
+    -Name "$vmName-ip" `
+    -ResourceGroupName $resourceGroup.ResourceGroupName `
+    -Location $location `
+    -AllocationMethod Dynamic 
 
-13. Public IP 생성
-    
-    ```powershell
-    $pip = New-AzPublicIpAddress `
-      -Name "$vmName-ip" `
-      -ResourceGroupName $resourceGroup.ResourceGroupName `
-      -Location $location `
-      -AllocationMethod Dynamic 
-    ```
+# NIC 생성
+$nic = New-AzNetworkInterface `
+    -Name "$($vmName)$(Get-Random)" `
+    -ResourceGroupName $resourceGroup.ResourceGroupName `
+    -Location $location `
+    -SubnetId $subnetid `
+    -PublicIpAddressId $pip.Id `
+    -NetworkSecurityGroupId $nsg.Id
 
-14. NIC 생성
-    
-    ```powershell
-    $nic = New-AzNetworkInterface `
-      -Name "$($vmName)$(Get-Random)" `
-      -ResourceGroupName $resourceGroup.ResourceGroupName `
-      -Location $location `
-      -SubnetId $subnetid `
-      -PublicIpAddressId $pip.Id `
-      -NetworkSecurityGroupId $nsg.Id
-    ```
 
-15. RDP admin username & password 저장
-    
-    ```powershell
-    $adminUsername = 'adminUser'
-    $adminPassword = 'password112233'
-    ```
+# Network settings
+# ------------------------------------------------------------
 
-16. PSCredential object 생성
-    
-    ```powershell
-    $adminCreds = New-Object PSCredential $adminUsername, ($adminPassword | ConvertTo-SecureString -AsPlainText -Force)
-    ```
+$adminUsername = 'mhsong'
+$adminPassword = 'thdAudgns9)'
 
-17. publisherName 저장
-    
-    ```powershell
-    $publisherName = 'MicrosoftWindowsServer'
-    ```
+# PSCredentail object 생성
+$adminCreds = New-Object PSCredential $adminUsername, ($adminPassword | ConvertTo-SecureString -AsPlainText -Force)
+$publisherName = 'MicrosoftWindowsServer'
+$offerName = 'WindowsServer'
+$skuName = '2019-Datacenter'
 
-18. offerName 저장
-    
-    ```powershell
-    $offerName = 'WindowsServer'
-    ```
+# VMConfig object 생성
+$vmConfig = New-AzVMConfig `
+    -VMName $vmName `
+    -VMSize $vmSize `
+    -AvailabilitySetId $availabilitySet.Id
 
-19. skuName 저장
-    
-    ```powershell
-    $skuName = '2019-Datacenter'
-    ```
+# VM - Network Interface Connect
+Add-AzVMNetworkInterface `
+    -VM $vmConfig `
+    -Id $nic.Id
 
-20. VMConfig object 생성
-    
-    ```powershell
-    $vmConfig = New-AzVMConfig `
-      -VMName $vmName `
-      -VMSize $vmSize `
-      -AvailabilitySetId $availabilitySet.Id
-    ```
+# VM Operating System 설정
+Set-AzVMOperatingSystem `
+    -VM $vmConfig `
+    -Windows `
+    -ComputerName $vmName `
+    -Credential $adminCreds
 
-21. VM - Network Interface Connect
-    
-    ```powershell
-    Add-AzVMNetworkInterface `
-      -VM $vmConfig `
-      -Id $nic.Id
-    ```
+# VM Source Image 설정
+Set-AzVMSourceImage `
+    -VM $vmConfig `
+    -PublisherName $publisherName `
+    -Offer $offerName `
+    -Skus $skuName `
+    -Version 'latest'
 
-22. VM Operating System 설정
-    
-    ```powershell
-    Set-AzVMOperatingSystem `
-      -VM $vmConfig `
-      -Windows `
-      -ComputerName $vmName `
-      -Credential $adminCreds
-    ```
+# VM OS Disk 설정
+Set-AzVMOSDisk `
+    -VM $vmConfig `
+    -Name "$($vmName)_OsDisk_1_$(Get-Random)" `
+    -StorageAccountType 'Standard_LRS' `
+    -CreateOption fromImage
 
-23. VM Source Image 설정
-    
-    ```powershell
-    Set-AzVMSourceImage `
-      -VM $vmConfig `
-      -PublisherName $publisherName `
-      -Offer $offerName `
-      -Skus $skuName `
-      -Version 'latest'
-    ```
+# VM Boot Diagnostic 설정
+Set-AzVMBootDiagnostic `
+    -VM $vmConfig `
+    -Disable
 
-24. VM OS Disk 설정
-    
-    ```powershell
-    Set-AzVMOSDisk `
-      -VM $vmConfig `
-      -Name "$($vmName)_OsDisk_1_$(Get-Random)" `
-      -StorageAccountType 'Standard_LRS' `
-      -CreateOption fromImage
-    ```
+# Azure VM 배포
+$vm = New-AzVM `
+  -ResourceGroupName $resourceGroup.ResourceGroupName `
+  -Location $location `
+  -VM $vmConfig
+```
 
-25. VM Boot Diagnostic 설정
+## ARM(Azure Resource Manager) Template으로 배포하기
 
-    ```powershell
-    Set-AzVMBootDiagnostic `
-      -VM $vmConfig `
-      -Disable
-    ```
+### VMDeployment.json
 
-## Template으로 배포하기
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmNamePrefix": {
+      "type": "string",
+      "defaultValue": "az1000302-vm",
+      "metadata": {
+        "description": "VM name prefix"
+      }
+    },
+    "nicNamePrefix": {
+      "type": "string",
+      "defaultValue": "az1000302-nic",
+      "metadata": {
+        "description": "Nic name prefix"
+      }
+    },
+    "pipNamePrefix": {
+      "type": "string",
+      "defaultValue": "az1000302-ip",
+      "metadata": {
+        "description": "Public IP address name prefix"
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin username"
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Admin password"
+      }
+    },
+    "imagePublisher": {
+      "type": "string",
+      "defaultValue": "MicrosoftWindowsServer",
+      "metadata": {
+        "description": "Image Publisher"
+      }
+    },
+    "imageOffer": {
+      "type": "string",
+      "defaultValue": "WindowsServer",
+      "metadata": {
+        "description": "Image Offer"
+      }
+    },
+    "imageSKU": {
+      "type": "string",
+      "defaultValue": "2019-Datacenter",
+      "metadata": {
+        "description": "Image SKU"
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS2_v2",
+      "metadata": {
+        "description": "VM size"
+      }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "defaultValue": "az1000301-RG-vnet",
+      "metadata": {
+        "description": "Virtual network name"
+      }
+    },
+    "virtualNetworkResourceGroup": {
+      "type": "string",
+      "defaultValue": "az1000301-RG",
+      "metadata": {
+        "description": "Resource group of the VNet"
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "defaultValue": "subnet0",
+      "metadata": {
+        "description": "Name of the VNet subnet"
+      }
+    }
+  },
+  "variables": {
+    "availabilitySetName": "az1000302-avset1",
+    "vnetID": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+    "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters ('subnetName'))]",
+    "numberOfInstances": 2,
+    "networkSecurityGroupName": "az1000302-vm-nsg"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "name": "[variables('availabilitySetName')]",
+      "apiVersion": "2018-06-01",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Aligned"
+      },
+      "properties": {
+        "platformFaultDomainCount": "2",
+        "platformUpdateDomainCount": "5"
+      }
+    },
+    {
+      "name": "[concat(parameters('nicNamePrefix'), copyindex())]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('networkSecurityGroupName'))]",
+        "pipLoop"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIpAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIpAddresses', concat(parameters('pipNamePrefix'), copyindex()))]"
+              },
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
+        }
+      }
+    },
+    {
+      "name": "[concat(parameters('pipNamePrefix'), copyindex())]",
+      "type": "Microsoft.Network/publicIpAddresses",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "comments": "Public IP for Primary NIC",
+      "copy": {
+        "name": "pipLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "properties": {
+        "publicIpAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "apiVersion": "2018-06-01",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('vmNamePrefix'), copyindex())]",
+      "copy": {
+        "name": "virtualMachineLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]",
+        "nicLoop"
+      ],
+      "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets',variables('availabilitySetName'))]"
+        },
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('vmNamePrefix'), copyIndex())]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[parameters('imagePublisher')]",
+            "offer": "[parameters('imageOffer')]",
+            "sku": "[parameters('imageSKU')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(parameters('nicNamePrefix'),copyindex()))]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[variables('networkSecurityGroupName')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "comments": "Network Security Group (NSG) for Primary NIC",
+      "properties": {
+        "securityRules": [
+        ]
+      }
+    }
+  ]
+}
+```
+
+### VMDeployment.parameters.json
+```json
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "value": "Student"
+        },
+        "adminPassword": {
+            "value": "Pa55w.rd1234"
+        }
+    }
+}
+```
 
 ## Azure CLI로 배포하기
