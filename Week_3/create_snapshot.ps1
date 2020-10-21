@@ -3,7 +3,7 @@ $resourceGroupName = 'az1000301-RG'
 $snapshotName = 'OsDiskSnapshot'
 
 $vm = Get-AzVM `
-    -ResourceGroupName $resourceGroupName`
+    -ResourceGroupName $resourceGroupName `
     -Name $vmName
 
 $snapshotConfig = New-AzSnapshotConfig `

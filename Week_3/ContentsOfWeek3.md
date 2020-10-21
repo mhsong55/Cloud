@@ -450,3 +450,16 @@ $vm = New-AzVM `
 ```
 
 ## Azure CLI로 배포하기
+
+## Snapshot으로 VM 생성하기
+
+### Debug @CreateVM_usingSnapshot.ps1
+
+```powershell
+New-AzVM: C:\mhsong\OneDrive\Documents\Internship\Zenithn\Week_3\CreateVM_usingSnapshot.ps1:59:1
+Line |
+  59 |  New-AzVM `
+     |  ~~~~~~~~~~
+     | Changing property 'osDisk.createOption' is not allowed. ErrorCode: PropertyChangeNotAllowed ErrorMessage: Changing property 'osDisk.createOption' is not allowed. ErrorTarget: osDisk.createOption StatusCode: 409 ReasonPhrase: Conflict OperationID :
+     | 0321c083-d571-447e-a2bf-952e9ee0ea01
+```
