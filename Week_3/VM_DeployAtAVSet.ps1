@@ -14,7 +14,7 @@ $resourceGroup = New-AzResourceGroup `
 
 # Availability Set 생성
 $availabilitySet = New-AzAvailabilitySet `
-    -ResourceGroupName $resourceGroup.ResourceGroupName `
+    -ResourceGroupName $resourceGroupName `
     -Name 'az1000301-avset0' `
     -Location $location `
     -PlatformFaultDomainCount 2 `
@@ -78,7 +78,6 @@ $nic = New-AzNetworkInterface `
     -PublicIpAddressId $pip.Id `
     -NetworkSecurityGroupId $nsg.Id
 
-
 # Network settings
 # ------------------------------------------------------------
 # String 선언
@@ -117,9 +116,7 @@ Set-AzVMSourceImage `
     -Skus $skuName `
     -Version 'latest'
 
-
 # VM OS Disk 설정
-#    -Name "$($vmName)_OsDisk_1_$(Get-Random)" `
 Set-AzVMOSDisk `
     -VM $vmConfig `
     -Name "$($vmName)_OsDisk_1_$(Get-Random)" `

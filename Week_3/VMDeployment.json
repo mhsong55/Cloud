@@ -37,21 +37,21 @@
     },
     "imagePublisher": {
       "type": "string",
-      "defaultValue": "Canonical",
+      "defaultValue": "MicrosoftWindowsServer",
       "metadata": {
         "description": "Image Publisher"
       }
     },
     "imageOffer": {
       "type": "string",
-      "defaultValue": "UbuntuServer",
+      "defaultValue": "WindowsServer",
       "metadata": {
         "description": "Image Offer"
       }
     },
     "imageSKU": {
       "type": "string",
-      "defaultValue": "16.04.0-LTS",
+      "defaultValue": "2019-Datacenter",
       "metadata": {
         "description": "Image SKU"
       }
@@ -86,11 +86,11 @@
     }
   },
   "variables": {
-    "availabilitySetName": "az1000302-avset1",
+    "availabilitySetName": "az1000301-avset0",
     "vnetID": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
     "subnetRef": "[concat(variables('vnetID'),'/subnets/',parameters ('subnetName'))]",
     "numberOfInstances": 2,
-    "networkSecurityGroupName": "az1000302-vm-nsg"
+    "networkSecurityGroupName": "subnet0-nsg"
   },
   "resources": [
     {
@@ -103,7 +103,7 @@
       },
       "properties": {
         "platformFaultDomainCount": "2",
-        "platformUpdateDomainCount": "5"
+        "platformUpdateDomainCount": "2"
       }
     },
     {
@@ -133,10 +133,7 @@
               }
             }
           }
-        ],
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]"
-        }
+        ]
       }
     },
     {
