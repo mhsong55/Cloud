@@ -1,9 +1,8 @@
-$resourceGroupName = 'az1000301-RG'
-$snapshotName = 'OsDiskSnapshot'
-$vmName = 'az1000301-vm0'
-$vmSize = 'Standard_DS2_v2'
-$vnetName = 'az1000301-RG-vnet'
-$osDiskName = $vmName + "_OsDisk_1_" + (Get-Random)
+# $resourceGroupName = 'az1000301-RG'
+# $snapshotName = 'OsDiskSnapshot'
+$secondVmName = 'az1000301-vm1'
+# $vmSize = 'Standard_DS2_v2'
+# $vnetName = $vnet.Name
 
 $snapshot = Get-AzSnapshot `
     -ResourceGroupName $resourceGroupName `
@@ -17,35 +16,38 @@ $diskConfig = New-AzDiskConfig `
 $disk = New-AzDisk `
     -Disk $diskConfig `
     -ResourceGroupName $resourceGroupName `
-    -DiskName $osDiskName
+    -DiskName "$($secondVmName)_OsDisk_1_$(Get-Random)"
 
 # Initialize virtual machine configuration
 $vmConfig = New-AzVMConfig `
-    -VMName $vmName `
-    -VMSize $vmSize
+    -VMName $secondVmName `
+    -VMSize $vmSize `
+    -AvailabilitySetId $availabilitySet.Id
 
 # Use the Managed Disk Resource Id to attach it to the virtual machine. Please change the OS type to linux if OS disk has linux OS
+# -CreateOption Attach `
+
 $vm = Set-AzVMOSDisk `
     -VM $vmConfig `
     -ManagedDiskId $disk.Id `
-    -CreateOption Attach `
+    -CreateOption fromImage `
     -Windows
 
 # Create a public IP for the VM
 $publicIp = New-AzPublicIpAddress `
-    -Name ($vmName.ToLower()+'_pip2') `
+    -Name ($secondVmName.ToLower()+'_pip2') `
     -ResourceGroupName $resourceGroupName `
     -Location $snapshot.Location `
     -AllocationMethod Dynamic
 
 # Get the virtual network where virtual machine will be hosted
-$vnet = Get-AzVirtualNetwork `
-    -Name $vnetName `
-    -ResourceGroupName $resourceGroupName
+# $vnet = Get-AzVirtualNetwork `
+#    -Name $vnet.Name `
+#    -ResourceGroupName $resourceGroupName
 
 # Create NIC in the first subnet of the virtual network
 $nic = New-AzNetworkInterface `
-    -Name ($vmName.ToLower()+'_nic2') `
+    -Name ($secondVmName.ToLower()+'_nic2') `
     -ResourceGroupName $resourceGroupName `
     -Location $snapshot.Location `
     -SubnetId $vnet.Subnets[0].Id `

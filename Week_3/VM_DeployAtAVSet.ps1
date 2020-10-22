@@ -1,13 +1,16 @@
 # AzAccount 연결
 # Connect-AzAccount
 
+# String 선언
+$resourceGroupName = 'az1000301-RG'
+$location = 'koreacentral'
+$vmName = 'az1000301-vm0'
+$vmSize = 'Standard_DS2_v2'
+
 # ResourceGroup 생성
 $resourceGroup = New-AzResourceGroup `
-    -Name 'az1000301-RG' `
-    -Location 'koreacentral'
-
-# location 저징
-$location = $resourceGroup.Location
+    -Name $resourceGroupName `
+    -Location $location
 
 # Availability Set 생성
 $availabilitySet = New-AzAvailabilitySet `
@@ -21,10 +24,10 @@ $availabilitySet = New-AzAvailabilitySet `
 # Virtual Network 생성
 $vnet = New-AzVirtualNetwork `
     -Name 'az1000301-RG-vnet' `
-    -ResourceGroupName $resourceGroup.ResourceGroupName `
+    -ResourceGroupName $resourceGroupName `
     -Location $location `
     -AddressPrefix '10.103.0.0/16'
-
+    
 # Subnet config 생성
 $subnetConfig = Add-AzVirtualNetworkSubnetConfig `
     -Name 'subnet0' `
@@ -37,12 +40,7 @@ $vnet | Set-AzVirtualNetwork
 # Subnet ID 저장
 $subnetid = (Get-AzVirtualNetwork `
     -Name $vnet.Name `
-    -ResourceGroupName $resourceGroup.ResourceGroupName).Subnets.Id
-
-# vmName 저장
-$vmName = 'az1000301-vm0'
-# vmSize 저장
-$vmSize = 'Standard_DS2_v2'
+    -ResourceGroupName $resourceGroupName).Subnets.Id
 
 # RDP Port Open
 $rdpRule = New-AzNetworkSecurityRuleConfig `
@@ -59,7 +57,7 @@ $rdpRule = New-AzNetworkSecurityRuleConfig `
 
 # NSG 생성
 $nsg = New-AzNetworkSecurityGroup `
-    -ResourceGroupName $resourceGroup.ResourceGroupName `
+    -ResourceGroupName $resourceGroupName `
     -Location $location `
     -Name "$vmName-nsg" `
     -SecurityRules $rdpRule
@@ -67,14 +65,14 @@ $nsg = New-AzNetworkSecurityGroup `
 # Public IP 생성
 $pip = New-AzPublicIpAddress `
     -Name "$vmName-pip1" `
-    -ResourceGroupName $resourceGroup.ResourceGroupName `
+    -ResourceGroupName $resourceGroupName `
     -Location $location `
     -AllocationMethod Dynamic 
 
 # NIC 생성
 $nic = New-AzNetworkInterface `
     -Name "$($vmName)$(Get-Random)" `
-    -ResourceGroupName $resourceGroup.ResourceGroupName `
+    -ResourceGroupName $resourceGroupName `
     -Location $location `
     -SubnetId $subnetid `
     -PublicIpAddressId $pip.Id `
@@ -83,15 +81,15 @@ $nic = New-AzNetworkInterface `
 
 # Network settings
 # ------------------------------------------------------------
-
+# String 선언
 $adminUsername = 'mhsong'
 $adminPassword = 'thdAudgns9)'
-
-# PSCredentail object 생성
-$adminCreds = New-Object PSCredential $adminUsername, ($adminPassword | ConvertTo-SecureString -AsPlainText -Force)
 $publisherName = 'MicrosoftWindowsServer'
 $offerName = 'WindowsServer'
 $skuName = '2019-Datacenter'
+
+# PSCredentail object 생성
+$adminCreds = New-Object PSCredential $adminUsername, ($adminPassword | ConvertTo-SecureString -AsPlainText -Force)
 
 # VMConfig object 생성
 $vmConfig = New-AzVMConfig `
@@ -119,7 +117,9 @@ Set-AzVMSourceImage `
     -Skus $skuName `
     -Version 'latest'
 
+
 # VM OS Disk 설정
+#    -Name "$($vmName)_OsDisk_1_$(Get-Random)" `
 Set-AzVMOSDisk `
     -VM $vmConfig `
     -Name "$($vmName)_OsDisk_1_$(Get-Random)" `
@@ -133,7 +133,7 @@ Set-AzVMBootDiagnostic `
 
 # Azure VM 배포
 $vm = New-AzVM `
-  -ResourceGroupName $resourceGroup.ResourceGroupName `
+  -ResourceGroupName $resourceGroupName `
   -Location $location `
   -VM $vmConfig
 

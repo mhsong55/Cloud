@@ -1,0 +1,162 @@
+DEBUG: 오후 11:32:46 - NewAzureVMCommand begin processing with ParameterSet 'DefaultParameterSet'.
+DEBUG: 오후 11:32:46 - using account id 'mhsong01@zenithn.com'...
+DEBUG: [Common.Authentication]: Authenticating using Account: 'mhsong01@zenithn.com', environment: 'AzureCloud', tenant: '785087ba-1e72-4e7d-b1d1-4a9639137a66'
+DEBUG: [Common.Authentication]: Authenticating using configuration values: Domain: '785087ba-1e72-4e7d-b1d1-4a9639137a66', Endpoint: 'https://login.microsoftonline.com/', ClientId: '1950a258-227b-4e31-a9cf-717495945fc2', ClientRedirect: 'urn:ietf:wg:oauth:2.0:oob', ResourceClientUri: 'https://management.core.windows.net/', ValidateAuthority: 'True'
+DEBUG: [Common.Authentication]: Acquiring token using context with Authority 'https://login.microsoftonline.com/785087ba-1e72-4e7d-b1d1-4a9639137a66/', 
+CorrelationId: '00000000-0000-0000-0000-000000000000', ValidateAuthority: 'True'
+DEBUG: [Common.Authentication]: Acquiring token using AdalConfiguration with Domain: '785087ba-1e72-4e7d-b1d1-4a9639137a66', AdEndpoint: 'https://login.microsoftonline.com/', ClientId: '1950a258-227b-4e31-a9cf-717495945fc2', ClientRedirectUri: urn:ietf:wg:oauth:2.0:oob
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5712467Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: ADAL PCL.CoreCLR with assembly version '3.19.2.6005', file version '3.19.50302.0130' and informational version '2a8bec6c4c76d0c1ef819b55bdc3cda2d2605056' is running...
+
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5712917Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: ADAL PCL.CoreCLR with assembly version '3.19.2.6005', file version '3.19.50302.0130' and informational version '2a8bec6c4c76d0c1ef819b55bdc3cda2d2605056' is running...
+
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5713158Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: === Token Acquisition started:
+        CacheType: null
+        Authentication Target: User
+        , Authority Host: login.microsoftonline.com
+
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5713296Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: === Token Acquisition started:
+        Authority: https://login.microsoftonline.com/785087ba-1e72-4e7d-b1d1-4a9639137a66/
+        Resource: https://management.core.windows.net/
+        ClientId: 1950a258-227b-4e31-a9cf-717495945fc2
+        CacheType: null
+        Authentication Target: User
+
+
+DEBUG: [ADAL]: Verbose: 2020-10-21T14:32:46.5713651Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: Loading from cache.
+
+DEBUG: [ADAL]: Verbose: 2020-10-21T14:32:46.5713776Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: Loading from cache.
+
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5719969Z: 00000000-0000-0000-0000-000000000000 - LoggerBase.cs: Deserialized 1 items to token cache.    
+
+DEBUG: [ADAL]: Verbose: 2020-10-21T14:32:46.5720327Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: Looking up cache for a token...
+
+DEBUG: [ADAL]: Verbose: 2020-10-21T14:32:46.5720445Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: Looking up cache for a token...
+
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5720640Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: An item matching the requested resource 
+was found in the cache
+
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5720743Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: An item matching the requested resource 
+was found in the cache
+
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5720957Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: 14.219531815 minutes left until token in cache expires
+
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5721062Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: 14.219531815 minutes left until token in cache expires
+
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5721153Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: A matching item (access token or refresh token or both) was found in the cache
+
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5721254Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: A matching item (access token or refresh token or both) was found in the cache
+
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5721636Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: === Token Acquisition finished successfully. An access token was returned: Expiration Time: 2020-10-21 오후 2:46:59 +00:00
+
+DEBUG: [ADAL]: Information: 2020-10-21T14:32:46.5721762Z: 9873cf82-daea-4909-af95-8a40ffbc4b52 - LoggerBase.cs: === Token Acquisition finished successfully. An access token was returned: Expiration Time: 2020-10-21 오후 2:46:59 +00:00Access Token Hash: 3ZdIU+6Qs5G6nobPfkHiHrGUTTjJGoAMgGC3i27ZuLI=       
+         User id: 55aa592c-450f-4788-a0c2-d3df054a8f9e
+
+DEBUG: [Common.Authentication]: Renewing Token with Type: 'Bearer', Expiry: '10/21/2020 14:46:59 +00:00', MultipleResource? 'True', Tenant: '785087ba-1e72-4e7d-b1d1-4a9639137a66', UserId: 'mhsong01@zenithn.com'
+DEBUG: [Common.Authentication]: User info for token DisplayId: 'mhsong01@zenithn.com', Name:  , IdProvider: 'https://sts.windows.net/785087ba-1e72-4e7d-b1d1-4a9639137a66/', Uid: '55aa592c-450f-4788-a0c2-d3df054a8f9e'
+DEBUG: [Common.Authentication]: Checking token expiration, token expires '10/21/2020 14:46:59 +00:00' Comparing to '10/21/2020 14:32:46 +00:00' With threshold '00:05:00', calculated time until token expiry: '00:14:13.1592978'
+DEBUG: ============================ HTTP REQUEST ============================
+
+HTTP Method:
+PUT
+
+Absolute Uri:
+https://management.azure.com/subscriptions/917428f7-be1f-4e78-898e-bf25497ced6a/resourceGroups/az1000301-RG/providers/Microsoft.Compute/virtualMachines/az1000301-vm0?api-version=2020-06-01
+
+Headers:
+x-ms-client-request-id        : af731136-e548-43d5-ac50-a460ed4b8bcf
+Accept-Language               : en-US
+
+Body:
+{
+  "properties": {
+    "hardwareProfile": {
+      "vmSize": "Standard_DS2_v2"
+    },
+    "storageProfile": {
+      "osDisk": {
+        "osType": "Windows",
+        "writeAcceleratorEnabled": false,
+        "createOption": "Attach",
+        "managedDisk": {
+          "id": "/subscriptions/917428f7-be1f-4e78-898e-bf25497ced6a/resourceGroups/az1000301-RG/providers/Microsoft.Compute/disks/az1000301-vm0_OsDisk_1_1903160325"
+        }
+      }
+    },
+    "networkProfile": {
+      "networkInterfaces": [
+        {
+          "id": "/subscriptions/917428f7-be1f-4e78-898e-bf25497ced6a/resourceGroups/az1000301-RG/providers/Microsoft.Network/networkInterfaces/az1000301-vm0_nic2"
+        }
+      ]
+    },
+    "diagnosticsProfile": {
+      "bootDiagnostics": {
+        "enabled": true,
+        "storageUri": "https://visuaaz1000az10102118160.blob.core.windows.net/"
+      }
+    }
+  },
+  "location": "koreacentral"
+}
+
+
+DEBUG: ============================ HTTP RESPONSE ============================
+
+Status Code:
+Conflict
+
+Headers:
+Cache-Control                 : no-cache
+Pragma                        : no-cache
+x-ms-ratelimit-remaining-resource: Microsoft.Compute/PutVM3Min;239,Microsoft.Compute/PutVM30Min;1199
+Strict-Transport-Security     : max-age=31536000; includeSubDomains
+x-ms-request-id               : 8a13809a-f805-4534-82c2-99718d8e124b
+Server                        : Microsoft-HTTPAPI/2.0,Microsoft-HTTPAPI/2.0
+x-ms-ratelimit-remaining-subscription-writes: 1199
+x-ms-correlation-request-id   : 7d5c2305-0e88-4ad6-8529-476a2eaa3e8f
+x-ms-routing-request-id       : KOREACENTRAL:20201021T143241Z:7d5c2305-0e88-4ad6-8529-476a2eaa3e8f
+X-Content-Type-Options        : nosniff
+Date                          : Wed, 21 Oct 2020 14:32:41 GMT
+
+Body:
+{
+  "error": {
+    "code": "PropertyChangeNotAllowed",
+    "message": "Changing property 'osDisk.createOption' is not allowed.",
+    "target": "osDisk.createOption"
+  }
+}
+
+
+DEBUG: AzureQoSEvent: CommandName - New-AzVM; IsSuccess - True; Duration - 00:00:00.6165412;
+DEBUG: Finish sending metric.
+DEBUG: 오후 11:32:48 - NewAzureVMCommand end processing.
+New-AzVM: Changing property 'osDisk.createOption' is not allowed.
+ErrorCode: PropertyChangeNotAllowed
+ErrorMessage: Changing property 'osDisk.createOption' is not allowed.
+ErrorTarget: osDisk.createOption
+StatusCode: 409
+ReasonPhrase: Conflict
+OperationID : 8a13809a-f805-4534-82c2-99718d8e124b
+DEBUG: AzureQoSEvent: CommandName - New-AzVM; IsSuccess - False; Duration - 00:00:00.6165412;; Exception - Microsoft.Azure.Commands.Compute.Common.ComputeCloudException: Changing property 'osDisk.createOption' is not allowed.
+ErrorCode: PropertyChangeNotAllowed
+ErrorMessage: Changing property 'osDisk.createOption' is not allowed.
+ErrorTarget: osDisk.createOption
+StatusCode: 409
+ReasonPhrase: Conflict
+OperationID : 8a13809a-f805-4534-82c2-99718d8e124b
+ ---> Microsoft.Rest.Azure.CloudException: Changing property 'osDisk.createOption' is not allowed.
+   at Microsoft.Azure.Management.Compute.VirtualMachinesOperations.BeginCreateOrUpdateWithHttpMessagesAsync(String resourceGroupName, String vmName, VirtualMachine parameters, Dictionary`2 customHeaders, CancellationToken cancellationToken)
+   at Microsoft.Azure.Management.Compute.VirtualMachinesOperations.CreateOrUpdateWithHttpMessagesAsync(String resourceGroupName, String vmName, VirtualMachine parameters, Dictionary`2 customHeaders, CancellationToken cancellationToken)
+   at Microsoft.Azure.Commands.Compute.NewAzureVMCommand.<DefaultExecuteCmdlet>b__146_0()
+   at Microsoft.Azure.Commands.Compute.ComputeClientBaseCmdlet.ExecuteClientAction(Action action)
+   --- End of inner exception stack trace ---
+   at Microsoft.Azure.Commands.Compute.ComputeClientBaseCmdlet.ExecuteClientAction(Action action)
+   at Microsoft.Azure.Commands.Compute.NewAzureVMCommand.DefaultExecuteCmdlet()
+   at Microsoft.Azure.Commands.Compute.NewAzureVMCommand.ExecuteCmdlet()
+   at Microsoft.WindowsAzure.Commands.Utilities.Common.CmdletExtensions.<>c__3`1.<ExecuteSynchronouslyOrAsJob>b__3_0(T c)
+   at Microsoft.WindowsAzure.Commands.Utilities.Common.CmdletExtensions.ExecuteSynchronouslyOrAsJob[T](T cmdlet, Action`1 executor)
+   at Microsoft.WindowsAzure.Commands.Utilities.Common.CmdletExtensions.ExecuteSynchronouslyOrAsJob[T](T cmdlet)
+   at Microsoft.WindowsAzure.Commands.Utilities.Common.AzurePSCmdlet.ProcessRecord();
+DEBUG: Finish sending metric.
+DEBUG: 오후 11:32:48 - NewAzureVMCommand end processing.

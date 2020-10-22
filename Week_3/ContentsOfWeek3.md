@@ -453,7 +453,98 @@ $vm = New-AzVM `
 
 ## Snapshot으로 VM 생성하기
 
+### OsDisk Snapshot 생성하기
+
+```powershell
+# $vmName = 'az1000301-vm0'
+$resourceGroupName = $resourceGroup.ResourceGroupName
+$snapshotName = 'OsDiskSnapshot'
+
+$vm = Get-AzVM `
+    -ResourceGroupName $resourceGroupName `
+    -Name $vmName
+
+$snapshotConfig = New-AzSnapshotConfig `
+    -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id `
+    -Location $location `
+    -CreateOption copy
+
+New-AzSnapshot `
+    -Snapshot $snapshotConfig `
+    -SnapshotName $snapshotName `
+    -ResourceGroupName $resourceGroupName
+```
+
+### Snapshot으로 동일 Availability Set에 VM 배포하기
+
+```powershell
+# $resourceGroupName = 'az1000301-RG'
+# $snapshotName = 'OsDiskSnapshot'
+# $vmName = 'az1000301-vm0'
+# $vmSize = 'Standard_DS2_v2'
+# $vnetName = $vnet.Name
+# $osDiskName = $vmName + "_OsDisk_1_" + (Get-Random)
+
+$snapshot = Get-AzSnapshot `
+    -ResourceGroupName $resourceGroupName `
+    -SnapshotName $snapshotName
+
+$diskConfig = New-AzDiskConfig `
+    -Location $snapshot.Location `
+    -SourceResourceId $snapshot.Id `
+    -CreateOption Copy
+
+$disk = New-AzDisk `
+    -Disk $diskConfig `
+    -ResourceGroupName $resourceGroupName #`
+    -DiskName $osDiskName
+
+# Initialize virtual machine configuration
+$vmConfig = New-AzVMConfig `
+    -VMName $vmName `
+    -VMSize $vmSize
+
+# Use the Managed Disk Resource Id to attach it to the virtual machine. Please change the OS type to linux if OS disk has linux OS
+$vm = Set-AzVMOSDisk `
+    -VM $vmConfig `
+    -ManagedDiskId $disk.Id `
+    -CreateOption Attach `
+    -Windows
+
+# Create a public IP for the VM
+$publicIp = New-AzPublicIpAddress `
+    -Name ($vmName.ToLower()+'_pip2') `
+    -ResourceGroupName $resourceGroupName `
+    -Location $snapshot.Location `
+    -AllocationMethod Dynamic
+
+# Get the virtual network where virtual machine will be hosted
+$vnet = Get-AzVirtualNetwork `
+    -Name $vnet.Name `
+    -ResourceGroupName $resourceGroupName
+
+# Create NIC in the first subnet of the virtual network
+$nic = New-AzNetworkInterface `
+    -Name ($vmName.ToLower()+'_nic2') `
+    -ResourceGroupName $resourceGroupName `
+    -Location $snapshot.Location `
+    -SubnetId $vnet.Subnets[0].Id `
+    -PublicIpAddressId $publicIp.Id
+
+$vm = Add-AzVMNetworkInterface `
+    -VM $vm `
+    -Id $nic.Id
+
+# Create the virtual machine with Managed Disk
+New-AzVM `
+    -VM $vm `
+    -ResourceGroupName $resourceGroupName `
+    -Location $snapshot.Location
+```
+
 ### Debug @CreateVM_usingSnapshot.ps1
+
+1. "Changing property 'osDisk.createOption' is not allowed"
 
 ```powershell
 New-AzVM: C:\mhsong\OneDrive\Documents\Internship\Zenithn\Week_3\CreateVM_usingSnapshot.ps1:59:1
@@ -463,3 +554,67 @@ Line |
      | Changing property 'osDisk.createOption' is not allowed. ErrorCode: PropertyChangeNotAllowed ErrorMessage: Changing property 'osDisk.createOption' is not allowed. ErrorTarget: osDisk.createOption StatusCode: 409 ReasonPhrase: Conflict OperationID :
      | 0321c083-d571-447e-a2bf-952e9ee0ea01
 ```
+
+해결 방법
+@CreateVM_usingSnapshot.ps1
+
+```powershell
+# Use the Managed Disk Resource Id to attach it to the virtual machine. Please change the OS type to linux if OS disk has linux OS
+$vm = Set-AzVMOSDisk `
+    -VM $vmConfig `
+    -ManagedDiskId $disk.Id `
+    -CreateOption Attach `
+    -Windows
+```
+
+- 위의 코드는 Documents에 있는 코드를 가져와 사용한 것
+- Snapshot 대상 VM의 Set-AzVMOSDisk command 사용 시 `-CreateOption`을 `fromImage`로 설정
+- Snapshot으로 VM 생성 시 `-CreateOption` 을 `Attach`로 변경해서 발생한 Error로 추정
+- `-CreateOption`을 `Attach` → `fromImage`로 변경
+
+## 201022 VMSS 교육
+
+VM Scale-Set
+
+    VM이긴 한데 부하에 따라서 임계치 값에 따라 동일 VM이 늘어나고 줄어듬
+
+    Scale in 감소
+    scale out 증가
+
+- Doc 반드시 볼것 (Overview, FAQ 등)
+  - 주로 Custom image
+
+VMSS 배포
+VMSS Scale-out, Scale-in
+이미지 업데이트
+
+Pip 없이 Portal에서 VM에 접속할 수 있는게 Bastion
+  - Bastion은 dedicated subnet
+
+절차
+
+VM
+
+테스트용 웹페이지
+
+이미지 만들기
+
+이미지 definition - 이미지 버전관리를 위한 
+
+이미지 생성, 관리 등 공부할 것
+
+실제 이미지 만들어 보기
+
+스냅샷 이미지 차이
+
+VMSS name 9글자까지만 인식됨 - 중복 주의
+
+visual studio core 수 제한 있음
+
+custom instance는 600개 제한인데, shared gallery image는 1000개 라는 이야기가 있음 확인 필요
+
+Bastion nsg 세팅 문제가 있음
+
+upgrade, reimage 각각 어떨 때 사용해야하는지 차이
+
+이미지 관리 측면에서 제너럴라이즈 해야된다는 해야된다는 약점 (이미지 만드는 공수가 많이 든다)
