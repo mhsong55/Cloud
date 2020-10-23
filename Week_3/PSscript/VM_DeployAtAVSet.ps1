@@ -18,29 +18,8 @@ $availabilitySet = New-AzAvailabilitySet `
     -Name 'az1000301-avset0' `
     -Location $location `
     -PlatformFaultDomainCount 2 `
-    -PlatformUpdateDomainCount 2 `
+    -PlatformUpdateDomainCount 5 `
     -Sku aligned
-
-# Virtual Network 생성
-$vnet = New-AzVirtualNetwork `
-    -Name 'az1000301-RG-vnet' `
-    -ResourceGroupName $resourceGroupName `
-    -Location $location `
-    -AddressPrefix '10.103.0.0/16'
-    
-# Subnet config 생성
-$subnetConfig = Add-AzVirtualNetworkSubnetConfig `
-    -Name 'subnet0' `
-    -AddressPrefix '10.103.0.0/24' `
-    -VirtualNetwork $vnet
-
-# Subnet config VNET에 적용
-$vnet | Set-AzVirtualNetwork
-
-# Subnet ID 저장
-$subnetid = (Get-AzVirtualNetwork `
-    -Name $vnet.Name `
-    -ResourceGroupName $resourceGroupName).Subnets.Id
 
 # RDP Port Open
 $rdpRule = New-AzNetworkSecurityRuleConfig `
@@ -62,6 +41,28 @@ $nsg = New-AzNetworkSecurityGroup `
     -Name "$vmName-nsg" `
     -SecurityRules $rdpRule
 
+# Virtual Network 생성
+$vnet = New-AzVirtualNetwork `
+    -Name 'az1000301-RG-vnet' `
+    -ResourceGroupName $resourceGroupName `
+    -Location $location `
+    -AddressPrefix '10.103.0.0/16'
+    
+# Subnet config 생성
+$subnetConfig = Add-AzVirtualNetworkSubnetConfig `
+    -Name 'subnet0' `
+    -AddressPrefix '10.103.0.0/24' `
+    -VirtualNetwork $vnet
+    -NetworkSecurityGroupId $nsg.Id
+
+# Subnet config VNET에 적용
+$vnet | Set-AzVirtualNetwork
+
+# Subnet ID 저장
+$subnetid = (Get-AzVirtualNetwork `
+    -Name $vnet.Name `
+    -ResourceGroupName $resourceGroupName).Subnets.Id
+
 # Public IP 생성
 $pip = New-AzPublicIpAddress `
     -Name "$vmName-pip1" `
@@ -76,7 +77,7 @@ $nic = New-AzNetworkInterface `
     -Location $location `
     -SubnetId $subnetid `
     -PublicIpAddressId $pip.Id `
-    -NetworkSecurityGroupId $nsg.Id
+    
 
 # Network settings
 # ------------------------------------------------------------

@@ -1,8 +1,8 @@
 # $resourceGroupName = 'az1000301-RG'
 # $snapshotName = 'OsDiskSnapshot'
-$newVmName = 'az1000301-vm3'
 # $vmSize = 'Standard_DS2_v2'
 # $vnetName = $vnet.Name
+$newVmName = 'az1000301-vm3'
 
 $snapshot = Get-AzSnapshot `
     -ResourceGroupName $resourceGroupName `
