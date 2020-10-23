@@ -52,7 +52,7 @@ $vnet = New-AzVirtualNetwork `
 $subnetConfig = Add-AzVirtualNetworkSubnetConfig `
     -Name 'subnet0' `
     -AddressPrefix '10.103.0.0/24' `
-    -VirtualNetwork $vnet
+    -VirtualNetwork $vnet `
     -NetworkSecurityGroupId $nsg.Id
 
 # Subnet config VNET에 적용
