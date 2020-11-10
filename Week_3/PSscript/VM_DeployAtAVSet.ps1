@@ -4,8 +4,12 @@
 # String 선언
 $resourceGroupName = 'az1000301-RG'
 $location = 'koreacentral'
+<<<<<<< HEAD
 $vmNamePrefix = 'az1000301-vm'
 $vmName = "$($vmNamePrefix)1"
+=======
+$vmName = 'az1000301-vm0'
+>>>>>>> 7302e81ceb66c8ea98e1c579ff2ccbe2a8bb6fe5
 $vmSize = 'Standard_DS2_v2'
 
 # ResourceGroup 생성
@@ -77,7 +81,11 @@ $nic = New-AzNetworkInterface `
     -ResourceGroupName $resourceGroupName `
     -Location $location `
     -SubnetId $subnetid `
+<<<<<<< HEAD
     -PublicIpAddressId $pip.Id 
+=======
+    -PublicIpAddressId $pip.Id `
+>>>>>>> 7302e81ceb66c8ea98e1c579ff2ccbe2a8bb6fe5
     
 
 # Network settings

@@ -1,5 +1,9 @@
 # $resourceGroupName = $resourceGroup.ResourceGroupName
+<<<<<<< HEAD
 $vmName = "$($vmNamePrefix)1"
+=======
+$vmName = $vmNamePrefix + "1"
+>>>>>>> 7302e81ceb66c8ea98e1c579ff2ccbe2a8bb6fe5
 $snapshotName = 'OsDiskSnapshot'
 
 $vm = Get-AzVM `
