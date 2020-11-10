@@ -7,8 +7,14 @@
 
 *.jpg
 *.jpeg
+*.pem
+*.msi
+
+Azure_New_IconSet/
 
 Week_1/시스코 네트워킹 vol.1-목차.pdf
+
+CentOS8/
 
 !Week_1/img/*.jpg
 !Week_1/img/*.jpeg

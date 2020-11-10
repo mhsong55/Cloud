@@ -70,7 +70,7 @@ Azure는 클라우드 리소스의 상태에 대해 지속적으로 알려주는
 
 - Subnet은 On-Premise에서의 Subnet과 동일하며, 가상 네트워크를 하나 이상의 하위 네트워크로 분할하고 가상 네트워크 주소 공간의 일부를 각 서브넷에 할당
 - 하나의 네트워크로 서로 나뉘어진 서브넷끼리는 라우터를 통해서만 통신이 가능
-- Subnetting의 가장 기본적인 목적은 _**네트워크 분리/관리**_ 이며 이를 통해 IP 주소를 **보다 효율적으로 낭비없이** 쓰고 큰 네트워크를 작게 쪼게어 **브로드캐스트의 영향**을 감소
+- Subnetting의 가장 기본적인 목적은 _**네트워크 분리/관리**_ 이며 이를 통해 IP 주소를 **보다 효율적으로 낭비없이** 쓰고 큰 네트워크를 작게 쪼개 **브로드캐스트의 영향**을 감소
 - 일반적으로 사용되는 Ethernet의 경우 CSMA/CD (Carrier Sense Multiple Access/Collision Detection) 프로토콜을 사용하므로 너무 잦은 브로드캐스트는 네트워크에 속한 모든 PC의 CPU 성능을 떨어뜨리고 네트워크에서 데이터 전송을 불가능하게 함
 - 따라서 Subnetting으로 브로드캐스트 도메인을 축소시켜 하나의 브로드캐스트에 영향을 덜 받게끔 하는것에 Subnetting의 한 목적이 있음
 
@@ -105,15 +105,37 @@ Azure는 두 가지 형태의 피어링을 지원한다.
 
 ## 6. Load Balancer
 
-External, Internal Load Balancer
+> [Azure Load Balancer란?](https://docs.microsoft.com/ko-kr/azure/load-balancer/load-balancer-overview)
+
+- Load balance : 백 엔드 리소스나 서버의 그룹에서 load(들어오는 Network traffic)을 효율적으로 분산시키는 것
+- Azure Load Balancer는 OSI model의 layer 4에서 동작
+- Load balancer의 Front-end에서의 inbound traffic을 미리 구성된 load balance policy나 health probe에 따라 Back-end pool instance로 분산
+- Load Balancer는 External (or Public), Internal (or private) Load Balancer로 구분
+
+  1. External Load Balancer
+     - VNet 내의 VM에 대해 Out-Bound connection을 제공
+     - Private IP Address를 Public IP Address로 변환해서 진행
+     - 결과적으로 Internet traffic load를 VM에 분산하는 역할
+
+  2. Internal Load Balancer
+     - VNet 내부에서 사용되는 Load Balancer
+     - VNet 내부의 traffic을 분산시킬 떄 사용
+
+![azure_load_balancer_img](./img/azure-load-balancer.svg)
 
 ## Health Probe
 
 ## VPN (Virtual Private Network)
 
+일반적으로 private network와 private network를 연결하는데는 2가지 방법이 있는데 하나는 network를 전용선으로 연결하는 방법이다. 그러나 이 방법은 전용선 구축을 위한 물리적인 방법이 필요하다. 따라서 Public network(internet)을 전용선처럼 활용하고 암호화 기술을 적용해 보안성을 높인 private network 간 연결을 구축하는 방식을 VPN (Virtual Private Network)이라고 한다.
+
 ### (1) P2S (Point-to-Site) VPN
 
+개별 client와 network 간 연결
+
 ### (2) S2S (Site-to-Site) VPN
+
+network와 network 간 연결
 
 Azure VNet -------------------- IDC
 
