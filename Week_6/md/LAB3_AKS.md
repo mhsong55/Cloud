@@ -22,7 +22,7 @@
 
 - `Azure Active Directory`에서 기존 항목의 값을 가져온다.
   - `Azure AD`의 앱(`_AKS-test-intern`)의 Client ID, Password 가져옴
-    
+
 ### 1.3.2. 인증부 구성 설정 완료 화면
   
   ![aks-cluster-create-auth-complete](./img/aks_cluster_create_auth_complete.PNG)
@@ -86,7 +86,7 @@ ACR은 Container image를 위한 Private Registry이다.
   OpenSSL version: OpenSSL 1.1.0l  10 Sep 2019
   ```
 
-### 3.3. Azure CLI 설치 
+### 3.3. Azure CLI 설치
 
 > Reference : [[Microsoft Docs] Install Azure CLI](https://docs.microsoft.com/ko-kr/cli/azure/install-azure-cli)
 
@@ -121,7 +121,7 @@ gpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azu
 
 ### 3.4. Azure 계정에 login
 
-### 3.4.1. Run the Azure CLI with the `az` command. To sign in, use `az login` command.
+### 3.4.1. Run the Azure CLI with the `az` command. To sign in, use `az login` command
 
 Run the `login` command
 
@@ -137,7 +137,7 @@ To sign in, use a web browser to open the page https://microsoft.com/devicelogin
 - 사용할 구독 지정
 
 ```bash
-[mhsong@dockerVM2 ~]$ az account set --subscription 
+[mhsong@dockerVM2 ~]$ az account set --subscription
 [mhsong@dockerVM2 ~]$ az account show
 [mhsong@dockerVM2 ~]$ az account list
 ```
@@ -166,7 +166,6 @@ NAME                                STATUS   ROLES   AGE    VERSION
 aks-agentpool-25963097-vmss000000   Ready    agent   4h1m   v1.18.10
 aks-agentpool-25963097-vmss000001   Ready    agent   4h1m   v1.18.10
 ```
-
 
 여기까지 진행하면 해당 Linux VM에서 AKS를 사용할 준비가 완료된다.
 
@@ -463,7 +462,6 @@ error parsing HTTP 403 response body: invalid character '<' looking for beginnin
 
 위 push 명령은 `mcr.microsoft.com/azuredocs/azure-vote-front` repository에 push를 진행한다. 당연히 권한이 없어 에러가 발생한다. ACR Repository에 push하려면 `tag` command를 사용해 image tag를 변경해 repository를 바꿔준다.
 
-
 ```bash
 [mhsong@dockerVM2 azure-voting-app-redis]$ docker tag mcr.microsoft.com/azuredocs/azure-vote-front:v1 \
 > mhsongacr.azurecr.io/azure-vote-front:v1
@@ -652,7 +650,7 @@ push한 ACR Image를 사용하기 전에 aks에 ACR 인증 정보를 update한�
 
 ### 6.2. 매니페스트 파일 업데이트
 
-컨테이너를 실행하기 전에 ACR에 업데이트한 image를 pulling하는 것으로 매니페스트 파일을 수정한다. 
+컨테이너를 실행하기 전에 ACR에 업데이트한 image를 pulling하는 것으로 매니페스트 파일을 수정한다.
 
 ```yaml
 containers:
@@ -685,7 +683,7 @@ deployment.apps/azure-vote-front created
 service/azure-vote-front created
 ```
 
-해당 yaml 파일에는 deployment 뿐 아니라 외부에 각 deployment를 노출시키는 service 생성에 대한 내용도 포함되어 있다. `kubectl get services` command로 service가 생성되었는지 확인할 수 있다. 
+해당 yaml 파일에는 deployment 뿐 아니라 외부에 각 deployment를 노출시키는 service 생성에 대한 내용도 포함되어 있다. `kubectl get services` command로 service가 생성되었는지 확인할 수 있다.
 
 ```bash
 [mhsong@dockerVM2 azure-voting-app-redis]$ kubectl get services

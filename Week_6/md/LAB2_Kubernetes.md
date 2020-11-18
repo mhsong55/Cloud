@@ -47,6 +47,7 @@ nginx   1/1     Running   0          4m12s   10.244.1.3   node01   <none>       
 
 controlplane $ curl 10.244.1.3:80
 ```
+
 ![kubernetes-nginx-pods-deploy](./img/kubernetes_nginx_pods_deploy.PNG)
 
 ```html
@@ -103,7 +104,7 @@ spec:
     spec:
       containers:
       - image: nginx
-        name: nginx 
+        name: nginx
 ```
 
 ![kubernetes-nginx-deploy-yaml](./img/kubernetes_nginx_deploy_yaml.PNG)
@@ -130,15 +131,14 @@ nginx-deploy-5464994c96-nd5wn   1/1     Running   0          3m30s
 
 Kubernetes의 service는 LoadBalancing 기능이 있다. `서비스 타입 = 클러스터 IP`인 서비스를 배포한다.
 
-### 5.1. Menifest file을 생성한다.
+### 5.1. Menifest file을 생성
 
 ```bash
 vim nginx-deploy-service.yaml
 ```
 
 ```yaml
-apiVersion: v1 
-
+apiVersion: v1
 kind: Service
 metadata:
   name: nginx-deploy-svc
