@@ -18,24 +18,11 @@
 
 ### 1.3. 인증
 
-![aks-cluster-create-auth](./img/aks_cluster_create_auth.PNG)
-
 ### 1.3.1. 내 서비스 사용자 구성
-
-![aks-cluster-create-auth-myServiceUserConfig-complete](./img/aks_cluster_create_auth_myServiceUserConfig_complete.PNG)
 
 - `Azure Active Directory`에서 기존 항목의 값을 가져온다.
   - `Azure AD`의 앱(`_AKS-test-intern`)의 Client ID, Password 가져옴
-
-    ![aks-azure-ad-app-register](./img/aks_Azure_AD_AppRegister.PNG)
-
-    ```plain
-    Id : c1ddebba-4665-4cdc-9b3e-41030166dd9d
-    pw : _o1zG2Zu0HA_Z-eAJ9~6-W~_uf89NEfC8~
-    rg : AKS_Dev
-    rn : AKS-Dev
-    ```
-
+    
 ### 1.3.2. 인증부 구성 설정 완료 화면
   
   ![aks-cluster-create-auth-complete](./img/aks_cluster_create_auth_complete.PNG)
@@ -150,28 +137,9 @@ To sign in, use a web browser to open the page https://microsoft.com/devicelogin
 - 사용할 구독 지정
 
 ```bash
-[mhsong@dockerVM2 ~]$ az account set --subscription 917428f7-be1f-4e78-898e-bf25497ced6a
+[mhsong@dockerVM2 ~]$ az account set --subscription 
 [mhsong@dockerVM2 ~]$ az account show
 [mhsong@dockerVM2 ~]$ az account list
-```
-
-```json
-[
-  {
-    "cloudName": "AzureCloud",
-    "homeTenantId": "785087ba-1e72-4e7d-b1d1-4a9639137a66",
-    "id": "917428f7-be1f-4e78-898e-bf25497ced6a",
-    "isDefault": true,
-    "managedByTenants": [],
-    "name": "Visual Studio Enterprise 구독 - MPN",
-    "state": "Enabled",
-    "tenantId": "785087ba-1e72-4e7d-b1d1-4a9639137a66",
-    "user": {
-      "name": "mhsong01@zenithn.com",
-      "type": "user"
-    }
-  }
-]
 ```
 
 ## 3.5. 생성한 AKS Cluster에 연결
@@ -625,7 +593,6 @@ push한 ACR Image를 사용하기 전에 aks에 ACR 인증 정보를 update한�
   "enablePodSecurityPolicy": null,
   "enableRbac": true,
   "fqdn": "aks-rg-cluster-mh-dns-fa3fe715.hcp.koreacentral.azmk8s.io",
-  "id": "/subscriptions/917428f7-be1f-4e78-898e-bf25497ced6a/resourcegroups/AKS-RG/providers/Microsoft.ContainerService/managedClusters/AKS-RG-Cluster-mh",
   "identity": null,
   "identityProfile": null,
   "kubernetesVersion": "1.18.10",
@@ -640,7 +607,6 @@ push한 ACR Image를 사용하기 전에 aks에 ACR 인증 정보를 update한�
       "allocatedOutboundPorts": null,
       "effectiveOutboundIps": [
         {
-          "id": "/subscriptions/917428f7-be1f-4e78-898e-bf25497ced6a/resourceGroups/MC_AKS-RG_AKS-RG-Cluster-mh_koreacentral/providers/Microsoft.Network/publicIPAddresses/865a7e38-778d-49ab-8fc4-c3e4fd366495",
           "resourceGroup": "MC_AKS-RG_AKS-RG-Cluster-mh_koreacentral"
         }
       ],
