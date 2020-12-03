@@ -1,0 +1,22 @@
+kubectl apply -f post-secret.yaml
+kubectl apply -f post-pv.yaml
+kubectl apply -f post-pvc.yaml
+kubectl apply -f jekyll-blog-depl.yaml
+
+kubectl delete deployment jekyll-blog-depl
+kubectl delete pvc post-pvc
+kubectl delete pv post-pv
+kubectl delete secret post-secret
+
+kubectl get pvc,pv,secret
+
+az aks show --name AKS --resource-group AKS \
+  --query nodeResourceGroup  -o tsv)
+
+az disk create --resource-group MC_AKS_AKS_koreacentral --name post-pv --size-gb
+
+kubectl create secret generic azure-secret --from-literal=azurestorageaccountname=mhsongstorage --from-literal=azurestorageaccountkey=VDQf+WTxkg1uizQ8OuCba/xspvdZQiAdzkB0zsWanN4y7ObLzEHLw84C0jwY4JcMUbzktsGcFNaME2cni4ecLw==
+
+kubectl apply -f grafana.yaml
+kubectl apply -f grafana-svc.yaml
+

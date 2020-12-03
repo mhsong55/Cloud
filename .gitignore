@@ -23,3 +23,7 @@ CentOS8/
 
 !Week_1/img/*.jpg
 !Week_1/img/*.jpeg
+
+Final/ngrinder/
+Final/finalProject/log/
+Final/finalProject/*.csv

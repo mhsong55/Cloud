@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: post-pv
+spec:
+  capacity:
+    storage: 32Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadOnlyMany
+  persistentVolumeReclaimPolicy: Retain
+  azureDisk:
+    diskURI: /subscriptions/917428f7-be1f-4e78-898e-bf25497ced6a/resourcegroups/MC_AKS_AKS_koreacentral/providers/Microsoft.Compute/disks/post-pv
+    diskName: post-pv
+    kind: Managed
+    fsType: ext4

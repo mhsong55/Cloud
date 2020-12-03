@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jekyll-blog-depl
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jekyll-blog-depl
+  strategy:
+    rollingUpdate: 
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: jekyll-blog-depl
+    spec:
+      containers:
+      - name: jekyll-blog
+        image: mhsongacr.azurecr.io/jekyll-blog:v1
+        ports:
+        - containerPort: 4000
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m

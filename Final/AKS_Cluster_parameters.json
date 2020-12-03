@@ -1,0 +1,69 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceName": {
+            "value": "AKS"
+        },
+        "location": {
+            "value": "koreacentral"
+        },
+        "dnsPrefix": {
+            "value": "AKS-dns"
+        },
+        "kubernetesVersion": {
+            "value": "1.18.10"
+        },
+        "networkPlugin": {
+            "value": "azure"
+        },
+        "enableRBAC": {
+            "value": true
+        },
+        "servicePrincipalClientId": {
+            "value": "c1ddebba-4665-4cdc-9b3e-41030166dd9d"
+        },
+        "servicePrincipalClientSecret": {
+            "value": "_o1zG2Zu0HA_Z-eAJ9~6-W~_uf89NEfC8~"
+        },
+        "enablePrivateCluster": {
+            "value": false
+        },
+        "aadSessionKey": {
+            "value": null
+        },
+        "enableHttpApplicationRouting": {
+            "value": false
+        },
+        "enableAzurePolicy": {
+            "value": false
+        },
+        "vmssNodePool": {
+            "value": true
+        },
+        "vnetSubnetID": {
+            "value": "/subscriptions/917428f7-be1f-4e78-898e-bf25497ced6a/resourceGroups/AKS/providers/Microsoft.Network/virtualNetworks/AKS-vnet/subnets/default"
+        },
+        "serviceCidr": {
+            "value": "100.0.0.0/16"
+        },
+        "dnsServiceIP": {
+            "value": "100.0.0.10"
+        },
+        "dockerBridgeCidr": {
+            "value": "172.17.0.1/16"
+        },
+        "principalId": {
+            "value": "fff912a7-6d13-4680-ac6b-39417f0a9623"
+        },
+        "workspaceName": {
+            "value": "AKS-workspace"
+        },
+        "omsWorkspaceId": {
+            "value": "/subscriptions/917428f7-be1f-4e78-898e-bf25497ced6a/resourceGroups/DefaultResourceGroup-SE/providers/Microsoft.OperationalInsights/workspaces/DefaultWorkspace-917428f7-be1f-4e78-898e-bf25497ced6a-SE"
+        },
+        "workspaceRegion": {
+            "value": "koreacentral"
+        }
+    }
+}
